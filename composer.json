@@ -24,7 +24,7 @@
     "zodimo/base-return": "^0",
     "ramsey/uuid": "^4.2",
     "psr/event-dispatcher": "^1.0",
-    "psr/container": "^1.1",
+    "psr/container": "^1.1|^2.0",
     "psr/clock": "^1.0"
   },
   "require-dev": {
