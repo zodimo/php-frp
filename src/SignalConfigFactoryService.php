@@ -7,6 +7,7 @@ namespace Zodimo\FRP;
 use Psr\Container\ContainerInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 use Zodimo\FRP\Models\DerivedSignalConfig;
+use Zodimo\FRP\Models\EffectSignalConfig;
 use Zodimo\FRP\Models\RootSignalConfig;
 use Zodimo\FRP\Models\RootSignalConfigBuilder;
 
@@ -59,6 +60,14 @@ class SignalConfigFactoryService
     public function createDerivedSignalConfig(?string $signalName = null): DerivedSignalConfig
     {
         return DerivedSignalConfig::create($this->getEventDispatcher(), $signalName);
+    }
+
+    /**
+     * @return EffectSignalConfig<mixed,mixed>
+     */
+    public function createEffectSignalConfig(?string $signalName = null): EffectSignalConfig
+    {
+        return EffectSignalConfig::create($this->getEventDispatcher(), $signalName);
     }
 
     private function getEventDispatcher(): EventDispatcherInterface

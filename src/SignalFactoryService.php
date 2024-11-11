@@ -4,8 +4,11 @@ declare(strict_types=1);
 
 namespace Zodimo\FRP;
 
+use Zodimo\BaseReturn\IOMonad;
 use Zodimo\FRP\Models\DerivedSignal;
 use Zodimo\FRP\Models\DerivedSignalConfig;
+use Zodimo\FRP\Models\EffectSignal;
+use Zodimo\FRP\Models\EffectSignalConfig;
 use Zodimo\FRP\Models\RootSignal;
 use Zodimo\FRP\Models\RootSignalConfig;
 
@@ -80,6 +83,26 @@ class SignalFactoryService
             $parentSignals,
             $config
         );
+
+        $this->runtime->registerDerivedSignal($signal);
+
+        return $signal;
+    }
+
+    /**
+     * @template TIN
+     * @template TSUCCESS
+     * @template TFAILURE
+     *
+     * @param callable(TIN):IOMonad<TSUCCESS,TFAILURE> $func
+     * @param SignalInterface<TIN>                     $parentSignal
+     * @param EffectSignalConfig<TSUCCESS,TFAILURE>    $config
+     *
+     * @return EffectSignalInterface<TSUCCESS,TFAILURE>
+     */
+    public function createEffectSignal(callable $func, SignalInterface $parentSignal, EffectSignalConfig $config): EffectSignalInterface
+    {
+        $signal = EffectSignal::create($this->runtime->createGuid(), $func, $parentSignal, $config);
 
         $this->runtime->registerDerivedSignal($signal);
 

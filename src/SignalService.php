@@ -4,9 +4,11 @@ declare(strict_types=1);
 
 namespace Zodimo\FRP;
 
+use Zodimo\BaseReturn\IOMonad;
 use Zodimo\BaseReturn\Option;
 use Zodimo\BaseReturn\Tuple;
 use Zodimo\FRP\Models\DerivedSignalConfig;
+use Zodimo\FRP\Models\EffectSignalConfig;
 use Zodimo\FRP\Models\RootSignalConfig;
 use Zodimo\FRP\Models\RootSignalConfigBuilder;
 
@@ -40,16 +42,16 @@ class SignalService
      * @template TVALUE
      * @template TEVENTOBJ
      *
-     * @param TVALUE                              $value
+     * @param TVALUE                              $initialValue
      * @param ?RootSignalConfig<TVALUE,TEVENTOBJ> $signalConfig
      *
      * @return RootSignalInterface<TVALUE,TEVENTOBJ>
      */
-    public function createRootSignal($value, ?RootSignalConfig $signalConfig = null): RootSignalInterface
+    public function createRootSignal($initialValue, ?RootSignalConfig $signalConfig = null): RootSignalInterface
     {
         $signalConfig ??= $this->signalConfigFactoryService->createRootSignalConfig();
 
-        return $this->signalFactoryService->createRootSignal($value, $signalConfig);
+        return $this->signalFactoryService->createRootSignal($initialValue, $signalConfig);
     }
 
     /**
@@ -295,5 +297,23 @@ class SignalService
         $signalConfig ??= $this->signalConfigFactoryService->createDerivedSignalConfig();
 
         return $this->lift($func, $transitionSignal, $signalConfig);
+    }
+
+    /**
+     * @template IN
+     * @template OUT
+     * @template ERR
+     *
+     * @param callable(IN):IOMonad<OUT,ERR> $effect
+     * @param SignalInterface<IN>           $signalInterface
+     * @param ?EffectSignalConfig<OUT,ERR>  $signalConfig
+     *
+     * @return EffectSignalInterface<OUT,ERR>
+     */
+    public function effect(callable $effect, SignalInterface $signalInterface, ?EffectSignalConfig $signalConfig = null): EffectSignalInterface
+    {
+        $signalConfig ??= $this->signalConfigFactoryService->createEffectSignalConfig();
+
+        return $this->signalFactoryService->createEffectSignal($effect, $signalInterface, $signalConfig);
     }
 }
